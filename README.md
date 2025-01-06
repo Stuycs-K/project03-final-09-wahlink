@@ -1,13 +1,13 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/Vh67aNdh)
-# PROJECT NAME HERE
+# Sticks Online
 
-### GROUP NAME HERE
+### The Chimp Twisters
 
-Group Members Here
+Kartik Wahlin
        
 ### Project Description:
 
-Explain what is this project.
+It is the classic game sticks, or chopsticks, but played online via terminal.
   
 ### Instructions:
 
