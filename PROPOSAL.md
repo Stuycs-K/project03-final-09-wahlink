@@ -1,29 +1,24 @@
+
 # Final Project Proposal
 
 ## Group Members:
 
-names here.
+Kartik Wahlin
        
 # Intentions:
 
-A statement of the problem you are solving and/or a high level description of the project.
-    
+I want to make code that allows two players on the same machine to play [chopsticks](https://en.wikipedia.org/wiki/Chopsticks_%28hand_game%29). 
 # Intended usage:
-
-A description as to how the project will be used (describe the user interface).
+Players will run the 'server' or 'client' executable to connect to each other over a set WKP. They will then be prompted to make their move via a chain of user inputs specifying what move they want to make, the hand they want to use, and the target of their move.
   
 # Technical Details:
 
-A description of your technical design. This should include:
-   
-How you will be using the topics covered in class in the project.
-     
-How you are breaking down the project and who is responsible for which parts.
-  
-What data structures you will be using and how.
-     
-What algorithms and /or data structures you will be using, and how.
+My current plan is to use pipes to relay information from client to server, where the game state is stored in a file managed by the server. I will likely use a shared integer to keep track of which player is taking their turn. A stretch goal of mine is to use forking to allow for the server to play multiple clients at once. Another potential expansion would be having games with more than two players.
+I will be doing everything.
+I will use an array of integers to represent the game state, with each one representing the number of fingers on each hand. I will verify the connection using a three-way handshake. 
     
 # Intended pacing:
 
-A timeline with expected completion dates of parts of the project.
+Jan 13 - 3 way handshake tested and functional
+Jan 17 - Shared memory verification makes sure users do not read information too early, and wait their turn.
+Jan 20 - base game functional, potentially add more than 2 players
