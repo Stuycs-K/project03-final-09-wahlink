@@ -23,14 +23,9 @@ static void sighandler(int signo){
 int main() {
   signal(SIGINT,sighandler);
   signal(SIGPIPE, SIG_IGN);
+  srand(time(NULL));
   int to_client;
   int from_client;
-
-  int shmd;
-  int *data;
-  shmd = shmget(SHMK,0,0);
-  printf("SHM created: %d",shmd);
-  data =shmat(shmd,0,0);
 
   while(1){
     int from_client = serverprep();

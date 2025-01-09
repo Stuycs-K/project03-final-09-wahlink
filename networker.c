@@ -46,7 +46,6 @@ int clientconnect(int *to_server) {
 int serverconnect(int from_client) {
   printf("fork starting up\n");
   int to_client  = 0;
-  srand(time(NULL));
   int piddler;
   char fiddler[12];
   read(from_client,&piddler,sizeof(piddler));//NEEDS TO USE FIDDLER FOR THE READ TARGET MY GUYS
@@ -61,7 +60,15 @@ int serverconnect(int from_client) {
   read(from_client,&piddler,sizeof(piddler)); //Uses same "PIDDLER" var for all reads
   printf("server read %d. Connection complete.\n",piddler);
   //CONNECTION DONE MAKE THE GAME DOWN HERE
-
+  int player; //0 MEANS IT IS SERVERS TURN, 1 MEANS CLIENTS TURN
+  int logFd = open(DATA,O_RDWR,0666);
+  player = coinflip();
+  int buffer[5] = [1,1,1,1,player]; // First two are server's 'hands', second two are client's 'hands', last is current player
+  int buffer2[5];
+  write(logFd, buffer, sizeof(buffer));
+  read(logFd, buffer2, sizeof(buffer2));
+  printf("buffer contents: %d\n",buffer[0]);
+  printf("buffer2 contents: %d\n",buffer2[0]);
   int x = rand() % 100;
   while(write(fifofd, &x,sizeof(x))!=-1){
     printf("Server wrote %d\n",x);
