@@ -66,7 +66,7 @@ int serverconnect(int from_client) {
   logFd = open(DATA,O_CREAT|O_RDWR|O_EXCL,0666);
   if(logFd == -1){
   printf("failed to open datafile. please delete it.\n");
-  }//SAVE THE DATA RECALL FUNC FOR LATER JUST MAKE THE THING, MAKE SURE TO STORE GAMESTATES + TURN, AND FOCUS ON (re)LAYING (data through) PIPE(s)
+  }//SAVE THE DATA RECALL FUNC FOR LATER JUST MAKE THE THING, MAKE SURE TO STORE GAMESTATES + TURN, AND FOCUS ON PIPING
   char buffer[5] = {1,1,1,1,0}; // First two are server's 'hands', second two are client's 'hands', last is current player
   char buffer2[5];
   int writedist =write(logFd, buffer, sizeof(buffer));
