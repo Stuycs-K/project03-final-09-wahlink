@@ -61,14 +61,21 @@ int serverconnect(int from_client) {
   printf("server read %d. Connection complete.\n",piddler);
   //CONNECTION DONE MAKE THE GAME DOWN HERE
   int player; //0 MEANS IT IS SERVERS TURN, 1 MEANS CLIENTS TURN
-  int logFd = open(DATA,O_RDWR,0666);
   player = coinflip();
-  int buffer[5] = [1,1,1,1,player]; // First two are server's 'hands', second two are client's 'hands', last is current player
-  int buffer2[5];
-  write(logFd, buffer, sizeof(buffer));
-  read(logFd, buffer2, sizeof(buffer2));
+  int logFd;
+  logFd = open(DATA,O_CREAT|O_RDWR|O_EXCL,0666);
+  if(logFd == -1){
+  printf("failed to open datafile. please delete it.\n");
+  }//SAVE THE DATA RECALL FUNC FOR LATER JUST MAKE THE THING, MAKE SURE TO STORE GAMESTATES + TURN, AND FOCUS ON (re)LAYING (data through) PIPE(s)
+  char buffer[5] = {1,1,1,1,0}; // First two are server's 'hands', second two are client's 'hands', last is current player
+  char buffer2[5];
+  int writedist =write(logFd, buffer, sizeof(buffer));
+  lseek(logFd,-writedist,SEEK_CUR);
+  int readdist = read(logFd, buffer2, sizeof(buffer2));
   printf("buffer contents: %d\n",buffer[0]);
   printf("buffer2 contents: %d\n",buffer2[0]);
+  printf("bytes read: %d\n",readdist);
+  close(logFd);
   int x = rand() % 100;
   while(write(fifofd, &x,sizeof(x))!=-1){
     printf("Server wrote %d\n",x);

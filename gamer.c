@@ -5,5 +5,5 @@ int coinflip(){
 }
 
 void serverStarts(){
-  printf("Coinflip won! ")
+  printf("Coinflip won!");
 }
