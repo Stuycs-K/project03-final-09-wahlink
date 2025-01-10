@@ -15,7 +15,7 @@
 #define NETWORKER_H
 #define WKP "kaicenatsigmarizzohioskibidimonster"
 //#define SHMK "choppedchinwheredoIevenStart" not using for 2p
-#define DATA "myGame.txt"
+#define DATA "shawtyslikeamelodyinmyhead"
 
 
 int serverconnect(int from_client);

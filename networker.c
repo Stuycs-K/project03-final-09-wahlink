@@ -67,15 +67,9 @@ int serverconnect(int from_client) {
   if(logFd == -1){
   printf("failed to open datafile. please delete it.\n");
   }//SAVE THE DATA RECALL FUNC FOR LATER JUST MAKE THE THING, MAKE SURE TO STORE GAMESTATES + TURN, AND FOCUS ON PIPING
-  char buffer[5] = {1,1,1,1,0}; // First two are server's 'hands', second two are client's 'hands', last is current player
-  char buffer2[5];
-  int writedist =write(logFd, buffer, sizeof(buffer));
-  lseek(logFd,-writedist,SEEK_CUR);
-  int readdist = read(logFd, buffer2, sizeof(buffer2));
-  printf("buffer contents: %d\n",buffer[0]);
-  printf("buffer2 contents: %d\n",buffer2[0]);
-  printf("bytes read: %d\n",readdist);
-  close(logFd);
+  char buffer[5] = {1,1,1,1,player}; // First two are server's 'hands', second two are client's 'hands', last is current player
+  write(logFd, buffer, sizeof(buffer));
+  
   int x = rand() % 100;
   while(write(fifofd, &x,sizeof(x))!=-1){
     printf("Server wrote %d\n",x);
