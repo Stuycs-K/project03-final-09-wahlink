@@ -64,12 +64,15 @@ int serverconnect(int from_client) {
   player = coinflip();
   int logFd;
   logFd = open(DATA,O_CREAT|O_RDWR|O_EXCL,0666);
-  if(logFd == -1){
-  printf("failed to open datafile. please delete it.\n");
+  if(logFd == -1){ // REMEMBER TO CLOSE LOGFD
+    printf("failed to open datafile. please delete it.\n");
   }//SAVE THE DATA RECALL FUNC FOR LATER JUST MAKE THE THING, MAKE SURE TO STORE GAMESTATES + TURN, AND FOCUS ON PIPING
   char buffer[5] = {1,1,1,1,player}; // First two are server's 'hands', second two are client's 'hands', last is current player
   write(logFd, buffer, sizeof(buffer));
-  
+  if(player==0){
+    serverStarts(to_client);
+  }
+
   int x = rand() % 100;
   while(write(fifofd, &x,sizeof(x))!=-1){
     printf("Server wrote %d\n",x);
