@@ -20,3 +20,4 @@ Whole class time spent. Created the file for storing game data and wrote its fir
 Whole class time spent. Worked on figuring out how to use read, write, and lseek to recall information.
 
 ### 2024-13-03 - Started user input
+Started writing code to take and process actions on the server side

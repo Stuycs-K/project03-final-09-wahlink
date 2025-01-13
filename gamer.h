@@ -14,6 +14,6 @@
 #ifndef GAMER_H
 #define GAMER_H
 int coinflip();
-void serverStarts();
-
+void serverStarts(int gamestate[5], int pipe);
+void serverTurn(int gamestate[5], int pipe);
 #endif

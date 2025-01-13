@@ -70,7 +70,7 @@ int serverconnect(int from_client) {
   char buffer[5] = {1,1,1,1,player}; // First two are server's 'hands', second two are client's 'hands', last is current player
   write(logFd, buffer, sizeof(buffer));
   if(player==0){
-    serverStarts(to_client);
+    serverStarts(buffer, to_client);
   }
 
   int x = rand() % 100;
