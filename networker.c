@@ -67,12 +67,13 @@ int serverconnect(int from_client) {
   if(logFd == -1){ // REMEMBER TO CLOSE LOGFD
     printf("failed to open datafile. please delete it.\n");
   }//SAVE THE DATA RECALL FUNC FOR LATER JUST MAKE THE THING, MAKE SURE TO STORE GAMESTATES + TURN, AND FOCUS ON PIPING
-  char buffer[5] = {1,1,1,1,player}; // First two are server's 'hands', second two are client's 'hands', last is current player
-  write(logFd, buffer, sizeof(buffer));
-  if(player==0){
-    serverStarts(buffer, to_client);
-  }
-
+  struct gstate *startState=malloc(sizeof(gstate)); // First two are server's 'hands', second two are client's 'hands', last is current player
+  startState->h1 = 1; startState->h2 = 1; startState->h3 = 1; startState->h4 = 1; startState->Player = player;
+  write(logFd, startState, sizeof(startState));
+  //if(player==0){
+  //  serverStarts(*startState, to_client);
+  //}
+  close(logFd);
   int x = rand() % 100;
   while(write(fifofd, &x,sizeof(x))!=-1){
     printf("Server wrote %d\n",x);

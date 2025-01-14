@@ -4,65 +4,78 @@ int coinflip(){
   return(rand()%2);
 }
 
-void serverStarts(int gamestate[5], int pipe){
+void serverStarts(struct gstate state, int pipe){
   printf("Coinflip won! You go first.\n");
   serverTurn(gamestate, pipe);
 
 }
 
-void serverTurn(int gamestate[5], int pipe){
+void serverTurn(struct gstate state, int pipe){
   char buffer[512];
+  struct move temp;
   printf("Would you like to attack or split?\n");
-  fgets(buffer,sizeof[buffer],stdin);
+  fgets(buffer,sizeof(buffer),stdin);
   if (strcmp("attack\n",buffer)==0){
     printf("With which hand would you like to attack?\n");
-    fgets(buffer,sizeof[buffer],stdin);
+    fgets(buffer,sizeof(buffer),stdin);
     if (strcmp("1\n",buffer)==0){
-      if(gamestate[0]==0){
+      if(state.h1==0){
         printf("Choose an active hand!\n");
       }
       else{
         printf("Which hand would you like to attack?\n");
-        fgets(buffer,sizeof[buffer],stdin);
+        fgets(buffer,sizeof(buffer),stdin);
         if (strcmp("1\n",buffer)==0){ // Start of choosing target
-          if(gamestate[2]==0){
+          if(state.h3==0){
             printf("Choose an active hand!\n");
           }
           else{
-            sendcmd("atk",1,1);
+            temp.type = "atk"
+            temp.hand = 1
+            temp.target = 1
+            sendcmd(temp);
           }
         }
         else if (strcmp("2\n",buffer)==0){
-          if(gamestate[3]==0){
+          if(state.h4==0){
             printf("Choose an active hand!\n");
           }
           else{
-            sendcmd("atk",1,2,pipe);
+            temp.type = "atk"
+            temp.hand = 1
+            temp.target = 2
+            sendcmd(temp);
           }
         }//End of choosing target
       }
     }
     else if (strcmp("2\n",buffer)==0){
-      if(gamestate[1]==0){
+      if(state.h2==0){
         printf("Choose an active hand!\n");
       }
       else{
         printf("Which hand would you like to attack?\n");
-        fgets(buffer,sizeof[buffer],stdin);
+        fgets(buffer,sizeof(buffer),stdin);
         if (strcmp("1\n",buffer)==0){ // Start of choosing target
-          if(gamestate[2]==0){
+          if(state.h3==0){
             printf("Choose an active hand!\n");
           }
           else{
-            sendcmd("atk",2,1,pipe);
+            temp.type = "atk"
+            temp.hand = 2
+            temp.target = 1
+            sendcmd(temp);
           }
         }
         else if (strcmp("2\n",buffer)==0){
-          if(gamestate[3]==0){
+          if(state.h4==0){
             printf("Choose an active hand!\n");
           }
           else{
-            sendcmd("atk",2,2,pipe);
+            temp.type = "atk"
+            temp.hand = 2
+            temp.target = 2
+            sendcmd(temp);
           }
         }//End of choosing target
       }
@@ -72,22 +85,49 @@ void serverTurn(int gamestate[5], int pipe){
       serverTurn(gamestate,pipe);
     }
   }//end of "attack" code
-  else if (strcmp("split\n",buffer)==0){
+  else if (strcmp("split\n",buffer)==0){ // SPLITTING LETS YOU STALL SWAP RN, NEED TO CHANGE.
     printf("Which hand would you like to split with?\n");
-    fgets(buffer,sizeof[buffer],stdin);
+    fgets(buffer,sizeof(buffer),stdin);
     if (strcmp("1\n",buffer)==0){
-      if(gamestate[0]==0){
+      if(state.h1==0){
         printf("Choose an active hand!\n");
       }
       else(){
-        printf("How many would you like to transfer?(1-%d)",gamestate[0]);
+        printf("How many would you like to transfer?(1-%d)",state.h1);
+        fgets(buffer,sizeof(buffer),stdin);
+        int nuMoved=0;
+        sscanf(buffer,"%d",&nuMoved);
+        if(nuMoved<1||nuMoved>state.h1){
+          printf("enter a valid #(1-%d)",state.h1);
+        }
+        else{
+          temp.type = "swp";
+          temp.hand = 1;
+          temp.howmuch = nuMoved;
+        }
       }
     }
-
-
+    else if(strcmp("2\n",buffer)==0){
+      if(state.h2==0){
+        printf("Choose an active hand!\n");
+      }
+      else(){
+        printf("How many would you like to transfer?(1-%d)",state.h2);
+        fgets(buffer,sizeof(buffer),stdin);
+        int nuMoved=0;
+        sscanf(buffer,"%d",&nuMoved);
+        if(nuMoved<1||nuMoved>state.h2){
+          printf("enter a valid #(1-%d)",state.h2);
+        }
+        else{
+          temp.type = "swp";
+          temp.hand = 2;
+          temp.howmuch = nuMoved;
+        }
+      }
     }
   }
   else(){
     printf("invalid input. Please enter 'attack' or 'split'");
   }
-}
+} // Client's program should be the same, but swap the h1 and h3 and h2 and h4
