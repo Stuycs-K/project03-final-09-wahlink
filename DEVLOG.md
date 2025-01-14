@@ -21,3 +21,6 @@ Whole class time spent. Worked on figuring out how to use read, write, and lseek
 
 ### 2024-13-03 - Started user input
 Started writing code to take and process actions on the server side
+
+### 2024 - 14 - 03- Converted to structs
+Converted the previous string data storage format and used structs instead since they are way better.
