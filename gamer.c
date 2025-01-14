@@ -6,7 +6,7 @@ int coinflip(){
 
 void serverStarts(struct gstate state, int pipe){
   printf("Coinflip won! You go first.\n");
-  serverTurn(gamestate, pipe);
+  serverTurn(state, pipe);
 
 }
 
@@ -30,9 +30,9 @@ void serverTurn(struct gstate state, int pipe){
             printf("Choose an active hand!\n");
           }
           else{
-            temp.type = "atk"
-            temp.hand = 1
-            temp.target = 1
+            temp.type = "atk";
+            temp.hand = 1;
+            temp.target = 1;
             sendcmd(temp);
           }
         }
@@ -41,9 +41,9 @@ void serverTurn(struct gstate state, int pipe){
             printf("Choose an active hand!\n");
           }
           else{
-            temp.type = "atk"
-            temp.hand = 1
-            temp.target = 2
+            temp.type = "atk";
+            temp.hand = 1;
+            temp.target = 2;
             sendcmd(temp);
           }
         }//End of choosing target
@@ -61,9 +61,9 @@ void serverTurn(struct gstate state, int pipe){
             printf("Choose an active hand!\n");
           }
           else{
-            temp.type = "atk"
-            temp.hand = 2
-            temp.target = 1
+            temp.type = "atk";
+            temp.hand = 2;
+            temp.target = 1;
             sendcmd(temp);
           }
         }
@@ -72,9 +72,9 @@ void serverTurn(struct gstate state, int pipe){
             printf("Choose an active hand!\n");
           }
           else{
-            temp.type = "atk"
-            temp.hand = 2
-            temp.target = 2
+            temp.type = "atk";
+            temp.hand = 2;
+            temp.target = 2;
             sendcmd(temp);
           }
         }//End of choosing target
@@ -82,7 +82,7 @@ void serverTurn(struct gstate state, int pipe){
     }
     else{
       printf("Invalid input. Enter 1 or 2.\n");
-      serverTurn(gamestate,pipe);
+      serverTurn(state,pipe);
     }
   }//end of "attack" code
   else if (strcmp("split\n",buffer)==0){ // SPLITTING LETS YOU STALL SWAP RN, NEED TO CHANGE.
@@ -92,7 +92,7 @@ void serverTurn(struct gstate state, int pipe){
       if(state.h1==0){
         printf("Choose an active hand!\n");
       }
-      else(){
+      else{
         printf("How many would you like to transfer?(1-%d)",state.h1);
         fgets(buffer,sizeof(buffer),stdin);
         int nuMoved=0;
@@ -111,7 +111,7 @@ void serverTurn(struct gstate state, int pipe){
       if(state.h2==0){
         printf("Choose an active hand!\n");
       }
-      else(){
+      else{
         printf("How many would you like to transfer?(1-%d)",state.h2);
         fgets(buffer,sizeof(buffer),stdin);
         int nuMoved=0;
@@ -126,8 +126,13 @@ void serverTurn(struct gstate state, int pipe){
         }
       }
     }
+    else{
+      printf("Invalid input. Enter 1 or 2.\n");
+      serverTurn(state,pipe);
+    }
   }
-  else(){
+  else{
     printf("invalid input. Please enter 'attack' or 'split'");
+    serverTurn(state, pipe);
   }
 } // Client's program should be the same, but swap the h1 and h3 and h2 and h4

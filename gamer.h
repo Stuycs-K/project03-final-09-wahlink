@@ -13,9 +13,7 @@
 #ifndef GAMER_H
 #define GAMER_H
 int coinflip();
-void serverStarts(int gamestate[5], int pipe);
-void serverTurn(int gamestate[5], int pipe);
-void sendcmd(struct move play);
+
 struct gstate{
   int Player;
   int h1;
@@ -25,10 +23,15 @@ struct gstate{
 } gstate;
 
 struct move{
-  char type;
+  char* type;
   int hand;
   int target;
   int howmuch;
 } move;
+
+void serverStarts(struct gstate state, int pipe);
+void serverTurn(struct gstate state, int pipe);
+void sendcmd(struct move play);
+
 
 #endif
