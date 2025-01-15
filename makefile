@@ -16,3 +16,6 @@ networker.o: networker.c networker.h
 
 gamer.o: gamer.c gamer.h
 	gcc -c gamer.c gamer.h
+
+clean:
+	rm -rf *.o server client

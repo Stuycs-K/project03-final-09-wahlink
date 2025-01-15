@@ -31,7 +31,7 @@ struct move{
 
 void serverStarts(struct gstate state, int pipe);
 void serverTurn(struct gstate state, int pipe);
-void sendcmd(struct move play);
-
+void sendcmd(struct move play, int pipe);
+void logTurn(struct gstate state, struct move play);
 
 #endif

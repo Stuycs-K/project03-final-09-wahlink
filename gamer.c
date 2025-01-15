@@ -7,6 +7,10 @@ int coinflip(){
 void serverStarts(struct gstate state, int pipe){
   printf("Coinflip won! You go first.\n");
   serverTurn(state, pipe);
+}
+
+void sendcmd(struct move play, int pipe){
+  write(pipe, &play, sizeof(&play));
 
 }
 
@@ -33,7 +37,8 @@ void serverTurn(struct gstate state, int pipe){
             temp.type = "atk";
             temp.hand = 1;
             temp.target = 1;
-            sendcmd(temp);
+            sendcmd(temp,pipe);
+            logTurn(state, temp);
           }
         }
         else if (strcmp("2\n",buffer)==0){
@@ -44,7 +49,8 @@ void serverTurn(struct gstate state, int pipe){
             temp.type = "atk";
             temp.hand = 1;
             temp.target = 2;
-            sendcmd(temp);
+            sendcmd(temp,pipe);
+            logTurn(state, temp);
           }
         }//End of choosing target
       }
@@ -64,7 +70,8 @@ void serverTurn(struct gstate state, int pipe){
             temp.type = "atk";
             temp.hand = 2;
             temp.target = 1;
-            sendcmd(temp);
+            sendcmd(temp,pipe);
+            logTurn(state, temp);
           }
         }
         else if (strcmp("2\n",buffer)==0){
@@ -75,7 +82,8 @@ void serverTurn(struct gstate state, int pipe){
             temp.type = "atk";
             temp.hand = 2;
             temp.target = 2;
-            sendcmd(temp);
+            sendcmd(temp,pipe);
+            logTurn(state, temp);
           }
         }//End of choosing target
       }
