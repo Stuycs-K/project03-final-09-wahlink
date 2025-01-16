@@ -31,4 +31,4 @@ Hadn't thought this out originally, but here's how the server and client will co
   If client starts, server will write this as a unique message. Client will check for this, generate and write its turn, and then go into its read loop. I can have client generate its own file used to store replays(MAYBE) and have it view replays through that.
 
 ### 2024-15-03 - Started the pipe structure for comms
-Worked on carrying out last devlog for server, will need to adjust the move processing func for client.
+Worked on carrying out last devlog for server, will need to adjust the move processing func for client. MY GROUPID IS 18

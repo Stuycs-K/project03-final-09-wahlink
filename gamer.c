@@ -13,7 +13,7 @@ void sendcmd(struct move play, int pipe){
   write(pipe, &play, sizeof(&play));
 }
 
-struct gstate newStateServ(struct gstate state, struct move play){
+struct gstate newState(struct gstate state, struct move play){
   struct gstate temp;
   temp.h1 = state.h1;
   temp.h2 = state.h2;
@@ -26,20 +26,24 @@ struct gstate newStateServ(struct gstate state, struct move play){
         temp.h3 += temp.h1;
       }
       else if(play.target ==2){
-        temp.h4+=temp.h1
+        temp.h4+=temp.h1;
       }
     }
-
     else if (play.hand ==2){
-
+      if (play.target==1){
+        temp.h3 += temp.h2;
+      }
+      else if(play.target ==2){
+        temp.h4+=temp.h2;
+      }
     }//hand2
   }//attacks
   else if(play.type == "swp"){
     if(play.hand == 1){
-
+      temp.h2 += play.howmuch;
     }//hand1
     else if (play.hand ==2){
-
+      temp.h1 += play.howmuch;
     }//hand2
   }//swapping
   return temp;

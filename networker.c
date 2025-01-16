@@ -80,7 +80,12 @@ int serverconnect(int from_client) {
     packet.play = play; packet.move = move;
   }
   while(write(fifofd, &packet,sizeof(&packet))!=-1){
-    logTurn(packet);
+    logTurn(packet,DATA);
+    if(read(from_client, &packet,sizeof(&packet))==-1){
+      printf("Pipe connection closed, read failed.");
+      break;
+    }
+
   }
   close(from_client);
   close(to_client);
