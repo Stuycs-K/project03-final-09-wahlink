@@ -4,28 +4,32 @@ int coinflip(){
   return(rand()%2);
 }
 
-void serverStarts(struct gstate state, int pipe){
+struct move serverStarts(struct gstate state){
   printf("Coinflip won! You go first.\n");
-  serverTurn(state, pipe);
+  return serverTurn(state);
 }
 
 void sendcmd(struct move play, int pipe){
   write(pipe, &play, sizeof(&play));
 }
 
-struct gstate newState(struct gstate state, struct move play){
+struct gstate newStateServ(struct gstate state, struct move play){
   struct gstate temp;
-  temp.h1 = state.h1
-  temp.h2 = state.h2
-  temp.h3 = state.h3
-  temp.h4 = state.h4
+  temp.h1 = state.h1;
+  temp.h2 = state.h2;
+  temp.h3 = state.h3;
+  temp.h4 = state.h4;
   temp.player = (state.player-1)*-1
-  if(play.type == "atk"){
+  if (play.type == "atk"){
     if(play.hand == 1){
       if (play.target==1){
-        temp.h3 += temp.h1
+        temp.h3 += temp.h1;
       }
-    }//hand1
+      else if(play.target ==2){
+        temp.h4+=temp.h1
+      }
+    }
+
     else if (play.hand ==2){
 
     }//hand2
@@ -41,11 +45,11 @@ struct gstate newState(struct gstate state, struct move play){
   return temp;
 }
 
-void logTurn(struct gstate state, struct move play){
-  struct gstate temp = newState(state,play);
+void logTurn(struct packg packet, int fd){//MUST BE COMPLETED MUST BE COMPLETED MUST BE COMPLETED
+  write(fd, &packet, sizeof(&packet));
 }
 
-void serverTurn(struct gstate state, int pipe){
+struct move serverTurn(struct gstate state){
   char buffer[512];
   struct move temp;
   printf("Would you like to attack or split?\n");
@@ -68,8 +72,7 @@ void serverTurn(struct gstate state, int pipe){
             temp.type = "atk";
             temp.hand = 1;
             temp.target = 1;
-            sendcmd(temp,pipe);
-            logTurn(state, temp);
+            return temp;
           }
         }
         else if (strcmp("2\n",buffer)==0){
@@ -80,8 +83,7 @@ void serverTurn(struct gstate state, int pipe){
             temp.type = "atk";
             temp.hand = 1;
             temp.target = 2;
-            sendcmd(temp,pipe);
-            logTurn(state, temp);
+            return temp;
           }
         }//End of choosing target
       }
@@ -101,8 +103,7 @@ void serverTurn(struct gstate state, int pipe){
             temp.type = "atk";
             temp.hand = 2;
             temp.target = 1;
-            sendcmd(temp,pipe);
-            logTurn(state, temp);
+            return temp;
           }
         }
         else if (strcmp("2\n",buffer)==0){
@@ -113,8 +114,7 @@ void serverTurn(struct gstate state, int pipe){
             temp.type = "atk";
             temp.hand = 2;
             temp.target = 2;
-            sendcmd(temp,pipe);
-            logTurn(state, temp);
+            return temp;
           }
         }//End of choosing target
       }

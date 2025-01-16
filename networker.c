@@ -70,15 +70,17 @@ int serverconnect(int from_client) {
   struct gstate *startState=malloc(sizeof(gstate)); // First two are server's 'hands', second two are client's 'hands', last is current player
   startState->h1 = 1; startState->h2 = 1; startState->h3 = 1; startState->h4 = 1; startState->Player = player;
   write(logFd, startState, sizeof(startState));
-  //if(player==0){
-  //  serverStarts(*startState, to_client);
-  //}
-  close(logFd);
-  int x = rand() % 100;
-  while(write(fifofd, &x,sizeof(x))!=-1){
-    printf("Server wrote %d\n",x);
-    x = rand() % 100;
-    sleep(1);
+  struct gstate state;//Var used for GAMESTATE
+  state.h1 = 1; state.h2 = 1; state.h3 = 1; state.h4 = 1; state.Player = player
+  struct move play;//var used for MOVES MADE
+  struct packg packet;
+  if(player==0){
+    play = serverStarts(*startState, to_client);
+    state = newStateServ(state, play);
+    packet.play = play; packet.move = move;
+  }
+  while(write(fifofd, &packet,sizeof(&packet))!=-1){
+    logTurn(packet);
   }
   close(from_client);
   close(to_client);

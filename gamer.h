@@ -29,9 +29,16 @@ struct move{
   int howmuch;
 } move;
 
-void serverStarts(struct gstate state, int pipe);
-void serverTurn(struct gstate state, int pipe);
+struct packg{
+  struct move play;
+  struct gstate move;
+} packg;
+
+struct move serverStarts(struct gstate state);
+struct move serverTurn(struct gstate state);
+struct gstate newStateServ(struct gstate state, struct move play)
 void sendcmd(struct move play, int pipe);
-void logTurn(struct gstate state, struct move play);
+void logTurn(struct packg packet, int fd);
+
 
 #endif
