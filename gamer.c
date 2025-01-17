@@ -13,6 +13,16 @@ void sendcmd(struct move play, int pipe){
   write(pipe, &play, sizeof(&play));
 }
 
+int checkVictory(struct gstate state){//Returns: 0 on serverWin, 1 on clientWin, -1 on neither
+  if(state.h1==0&&state.h2==0){
+    return 1;
+  }
+  if(state.h3 == 0&&state.h4==0){
+    return 0;
+  }
+  return -1;
+}
+
 struct gstate newState(struct gstate state, struct move play){
   struct gstate temp;
   temp.h1 = state.h1;
