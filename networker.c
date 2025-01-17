@@ -71,21 +71,33 @@ int serverconnect(int from_client) {
   startState->h1 = 1; startState->h2 = 1; startState->h3 = 1; startState->h4 = 1; startState->Player = player;
   write(logFd, startState, sizeof(startState));
   struct gstate state;//Var used for GAMESTATE
-  state.h1 = 1; state.h2 = 1; state.h3 = 1; state.h4 = 1; state.Player = player
+  state.h1 = 1; state.h2 = 1; state.h3 = 1; state.h4 = 1; state.Player = player;
   struct move play;//var used for MOVES MADE
   struct packg packet;
   if(player==0){
-    play = serverStarts(*startState, to_client);
+    play = serverStarts(*startState);
     state = newStateServ(state, play);
     packet.play = play; packet.move = move;
   }
   while(write(fifofd, &packet,sizeof(&packet))!=-1){
-    logTurn(packet,DATA);
+    logTurn(packet,logFd);//LOG SERVER TURN
+    if(checkVictory(state)!=-1){
+      if(checkVictory(state)==0){
+        printf("You Win!\n");
+        break;
+      }
+      else{
+        printf("You Lose!\n");
+        break;
+      }
+    }
     if(read(from_client, &packet,sizeof(&packet))==-1){
       printf("Pipe connection closed, read failed.");
       break;
     }
+    logTurn(packet,logFd);//LOG CLIENT TURN
 
+    play = serverTurn(state);
   }
   close(from_client);
   close(to_client);

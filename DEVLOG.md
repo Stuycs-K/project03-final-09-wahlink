@@ -30,5 +30,8 @@ Hadn't thought this out originally, but here's how the server and client will co
   If server starts, it will generate its first turn, (maybe go straight to the loop)log it, and write it. It will then look to read -> log, and then go down to the for loop with write as the argument and read as one of the contents. If either of these fail, the loop breaks, both pipes close, and a dc message is sent. If the gamestate check declares a winner(this is at the end of the loop), a victory/defeat message is sent, both pipes close, and serverop is now allowed to view the replay.
   If client starts, server will write this as a unique message. Client will check for this, generate and write its turn, and then go into its read loop. I can have client generate its own file used to store replays(MAYBE) and have it view replays through that.
 
-### 2024-15-03 - Started the pipe structure for comms
+### 2024-16-03 - Started the pipe structure for comms
 Worked on carrying out last devlog for server, will need to adjust the move processing func for client. MY GROUPID IS 18
+
+### 2024-17-03 - Continued server's script
+Added win condtions for the server side, there is no rematch system yet but I have brainstormed how to carry that out.
