@@ -35,10 +35,18 @@ int clientconnect(int *to_server) {
   int ack = synack + 1;
   write(fifofd, &ack,sizeof(ack));
   printf("client wrote %d\n",ack);
-  int x;
-  while(read(wrfd, &x,sizeof(x))>0){
-    printf("client read: %d\n",x);
-    sleep(1);
+  struct gstate state;
+  struct move play;
+  struct packg packet;
+  read(wrfd,&state,sizeof(&state));
+  if(state.Player == 0){
+    printf("Server plays first. Awaiting server turn...\n");
+  }
+  else if(state.player == 1){
+    play = clientStarts(state);
+    state = newState(play);
+  }
+  while(read(wrfd, &packet,sizeof(packet))>0){
   }
   return from_server;
 }
@@ -77,7 +85,7 @@ int serverconnect(int from_client) {
   if(player==0){
     play = serverStarts(*startState);
     state = newStateServ(state, play);
-    packet.play = play; packet.move = move;
+    packet.play = play; packet.move = state;
   }
   while(write(fifofd, &packet,sizeof(&packet))!=-1){
     logTurn(packet,logFd);//LOG SERVER TURN
@@ -98,7 +106,9 @@ int serverconnect(int from_client) {
     logTurn(packet,logFd);//LOG CLIENT TURN
 
     play = serverTurn(state);
-  }
+    state = newStateServ(state, play);
+    packet.play = play; packet.move = state;
+  }//Gameplay loop done I hope. Betas mogged.
   close(from_client);
   close(to_client);
   printf("connection closed with %d\n",childPID);

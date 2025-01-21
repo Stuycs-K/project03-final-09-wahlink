@@ -35,7 +35,10 @@ struct packg{
 } packg;
 
 struct move serverStarts(struct gstate state);
+struct move clientStarts(struct gstate state);
 struct move serverTurn(struct gstate state);
+struct move clientTurn(struct gstate state);
+struct gstate newStateCli(struct gstate state, struct move play); 
 struct gstate newStateServ(struct gstate state, struct move play);
 void sendcmd(struct move play, int pipe);
 void logTurn(struct packg packet, int fd);
