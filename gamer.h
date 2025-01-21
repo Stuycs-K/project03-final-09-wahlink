@@ -43,7 +43,7 @@ int checkDeath(int inpt);
 void sendcmd(struct move play, int pipe);
 void logTurn(struct packg packet, int fd);
 void printmove(struct move play);
-void printstage(struct gstate state);
-int checkVictory(struct gstate state);
+void printstage(int mine, int theirs);
+int checkVictory(int mine, int theirs);
 
 #endif

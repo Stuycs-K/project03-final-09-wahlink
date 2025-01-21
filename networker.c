@@ -13,9 +13,7 @@ int serverprep() {
   return from_client;
 }
 
-FILE* moreprep(){
-  return popen(WKP,"r");
-}
+
 
 int clientconnect(int *to_server) {
   printf("Client start\n");
@@ -29,11 +27,9 @@ int clientconnect(int *to_server) {
   mkfifo(fiddy,0666);
   printf("PP created\n");
   int fifofd = open(WKP, O_WRONLY); //FIFOFD IS WKP HERE
-  FILE* wrp = popen(WKP,"w");
   write(fifofd, &griddy,sizeof(griddy));
   printf("Client wrote %d via WKP\n",griddy);//WIP - SEND STRING PID AN JUST USE THAT BRO
   int wrfd = open(fiddy,O_RDONLY);//OPEN THE PP
-  FILE* rep = popen(fiddy,"r");
   unlink(fiddy);
   int synack;
   read(wrfd,&synack,sizeof(synack));
@@ -41,63 +37,45 @@ int clientconnect(int *to_server) {
   int ack = synack + 1;
   write(fifofd, &ack,sizeof(ack));
   printf("client wrote %d\n",ack); //3 WAY HANDSHAKE DONE
-  struct gstate state;
-  struct move play;
-  struct packg packet;
-  fread(&state,sizeof(&state),1,rep);
-  if(state.Player == 0){
-    printf("Server plays first. Awaiting server turn...\n");
-    printstage(state);
-  }
-  else if(state.Player == 1){
-    printstage(state);
-    play = clientStarts(state);
-    state = newState(state,play);
-    packet.play = play; packet.move = state;
-    if(fwrite(&packet,sizeof(&packet),1,wrp)==-1){
-      printf("First write failed\n");
+  int mine = 0;
+  int theirs = 0;
+  char buffer[10];
+  printf("Make your move. Type 0 for rock, 1 for paper, and 2 for scissors\n");
+  while(fgets(buffer,sizeof(buffer),stdin)!=NULL){
+    if(sscanf(buffer,"%d",&mine)!= 1){
+      printf("Enter a valid number!(0,1, or 2)\n");
+      continue;
     }
-  }
-  while(fread(&packet,sizeof(&packet),1,rep)>0){
-    printf("Opponent has played.");
-    printstage(state);
-    if(checkVictory(state)!=-1){
-      if(checkVictory(state)==0){
-        printf("You Win!\n");
-        break;
-      }
-      else{
-        printf("You Lose!\n");
-        break;
-      }
+    if(read(wrfd,&theirs,sizeof(theirs))==-1){
+      printf("connection closed\n");
+      break;
     }
-    state = packet.move;
-    play = clientTurn(state);
-    state = newState(state,play);
-    packet.play = play; packet.move = state;
-    if(fwrite(&packet,sizeof(&packet),1,wrp)==-1){
-      printf("write failed\n");
+    if(write(fifofd,&mine,sizeof(mine))==-1){
+      printf("connection closed\n");
       break;
     }
     printf("You have played.");
-    printstage(state);
-    if(checkVictory(state)!=-1){
-      if(checkVictory(state)==0){
+    printstage(mine,theirs);
+    if(checkVictory(mine,theirs)!=-1){
+      if(checkVictory(mine,theirs)==0){
         printf("You Win!\n");
-        break;
+
       }
       else{
         printf("You Lose!\n");
-        break;
+
       }
     }
+    else{
+      printf("Draw.\n");
+    }
+    printf("Make your move. Type 0 for rock, 1 for paper, and 2 for scissors\n");
   }
+  printf("Connection closed.\n");
   return from_server;
-  fclose(wrp);
-  fclose(rep);
 }
 
-int serverconnect(int from_client, FILE* rep) {
+int serverconnect(int from_client) {
   printf("fork starting up\n");
   int to_client  = 0;
   int piddler;
@@ -107,7 +85,6 @@ int serverconnect(int from_client, FILE* rep) {
   int childPID = piddler;
   sprintf(fiddler, "%d",piddler);
   int fifofd = open(fiddler,O_WRONLY);
-  FILE* wrp = popen(fiddler,"w");
   int synack = piddler+1;
   to_client = fifofd;
   write(fifofd, &synack,sizeof(synack)); // synack is the return value(PID + 1)
@@ -116,78 +93,51 @@ int serverconnect(int from_client, FILE* rep) {
   printf("server read %d. Connection complete.\n",piddler);
   //CONNECTION DONE MAKE THE GAME DOWN HERE
   int player; //0 MEANS IT IS SERVERS TURN, 1 MEANS CLIENTS TURN
+  int mine = 0;
+  int theirs = 0;
+  int ours[2];
+  char buffer[10];
   player = coinflip();
   int logFd;
+  remove(DATA);
   logFd = open(DATA,O_CREAT|O_RDWR|O_EXCL,0666);
   if(logFd == -1){ // REMEMBER TO CLOSE LOGFD
     printf("failed to open datafile. please delete it.\n");
-  }//SAVE THE DATA RECALL FUNC FOR LATER JUST MAKE THE THING, MAKE SURE TO STORE GAMESTATES + TURN, AND FOCUS ON PIPING
-  //struct gstate *startState=malloc(sizeof(gstate)); // First two are server's 'hands', second two are client's 'hands', last is current player
-  //startState->h1 = 1; startState->h2 = 1; startState->h3 = 1; startState->h4 = 1; startState->Player = player;
-  //write(logFd, startState, sizeof(startState));
-  struct gstate state;//Var used for GAMESTATE
-  state.h1 = 1; state.h2 = 1; state.h3 = 1; state.h4 = 1; state.Player = player;
-  write(logFd,&state,sizeof(&state));
-  fwrite(&state,sizeof(&state),1,wrp);
-  struct move play;//var used for MOVES MADE
-  struct packg packet;
-  if(player==0){
-    printstage(state);
-    play = serverStarts(state);
-    state = newState(state, play);
-    packet.play = play; packet.move = state;
   }
-  else{
-    printf("Coinflip lost. Awaiting client turn...\n");
-    printstage(state);
-    if(fread(&packet,sizeof(&packet),1,rep)==-1){
-      printf("Pipe connection closed, read failed.");
+  printf("Make your move. Type 0 for rock, 1 for paper, and 2 for scissors\n");
+  while(fgets(buffer,sizeof(buffer),stdin)!=NULL){
+    if(sscanf(buffer,"%d",&mine)!= 1){
+      printf("Enter a valid number!(0,1, or 2)\n");
+      continue;
     }
-    logTurn(packet,logFd);//LOG CLIENT TURN
-    printf("They have played.");
-    printstage(state);
-    play = serverStarts(state);
-    state = newState(state, play);
-    packet.play = play; packet.move = state;
-  }
-  while(fwrite(&packet,sizeof(&packet),1,wrp)!=-1){
-    logTurn(packet,logFd);//LOG SERVER TURN
-    printf("You have played.");
-    printstage(state);
-    if(checkVictory(state)!=-1){
-      if(checkVictory(state)==0){
-        printf("You Win!\n");
-        break;
-      }
-      else{
-        printf("You Lose!\n");
-        break;
-      }
-    }
-    if(fread(&packet,sizeof(&packet),1,rep)==-1){
-      printf("Pipe connection closed, read failed.");
+    if(write(fifofd,&mine,sizeof(theirs))==-1){
+      printf("connection closed\n");
       break;
     }
-    logTurn(packet,logFd);//LOG CLIENT TURN
-    printf("They have played.");
-    printstage(state);
-    if(checkVictory(state)!=-1){
-      if(checkVictory(state)==0){
+    if(read(from_client,&theirs,sizeof(mine))==-1){
+      printf("connection closed\n");
+      break;
+    }
+    write(logFd,&mine,sizeof(&mine));
+    write(logFd,&theirs,sizeof(&theirs));
+    printf("Round complete. ");
+    printstage(mine,theirs);
+    if(checkVictory(mine,theirs)!=-1){
+      if(checkVictory(mine,theirs)==0){
         printf("You Win!\n");
-        break;
+
       }
       else{
         printf("You Lose!\n");
-        break;
+
       }
     }
+    else{
+      printf("Draw.\n");
+    }
+    printf("Make your move. Type 0 for rock, 1 for paper, and 2 for scissors\n");
+  }//Gameplay loop done I hope.
 
-    play = serverTurn(state);
-    state = newState(state, play);
-    packet.play = play; packet.move = state;
-  }//Gameplay loop done I hope. Betas mogged.
-  fclose(wrp);
-  fclose(rep);
   close(logFd);
   close(from_client);
   close(to_client);

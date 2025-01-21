@@ -22,8 +22,30 @@ void printmove(struct move play){
     printf("used swap from %d for %d value\n",play.hand,play.howmuch);
   }
 }
-void printstage(struct gstate state){
-  printf("Server: Hand 1:%d Hand 2:%d\nClient: Hand 1:%d Hand 2:%d\n",state.h1,state.h2,state.h3,state.h4);
+void printstage(int mine, int theirs){
+  char* m; m = (char*)malloc(10);
+  char* t; t = (char*)malloc(10);
+  if(mine==0){
+    strcpy(m,"rock");
+  }
+  if(mine==2){
+    strcpy(m,"scissors");
+  }
+  if(mine == 1){
+    strcpy(m,"paper");
+  }
+  if(theirs==0){
+    strcpy(t,"rock");
+  }
+  if(theirs==2){
+    strcpy(t,"scissors");
+  }
+  if(theirs == 1){
+    strcpy(t,"paper");
+  }
+  printf("You played %s, they played %s\n",m,t);
+  free(m);
+  free(t);
 }
 
 
@@ -32,14 +54,16 @@ void sendcmd(struct move play, int pipe){
   write(pipe, &play, sizeof(&play));
 }
 
-int checkVictory(struct gstate state){//Returns: 0 on serverWin, 1 on clientWin, -1 on neither
-  if(state.h1==0&&state.h2==0){
+int checkVictory(int mine, int theirs){//Returns: 0 on serverWin, 1 on clientWin, -1 on neither
+  if(mine==theirs){
+    return -1;
+  }
+  else if(mine+1==theirs||(mine-2) == theirs){
     return 1;
   }
-  if(state.h3 == 0&&state.h4==0){
+  else{
     return 0;
   }
-  return -1;
 }
 
 int checkDeath(int inpt){
@@ -127,9 +151,6 @@ struct gstate newState(struct gstate state, struct move play){ // Takes a move s
   return temp;
 }
 
-void logTurn(struct packg packet, int fd){//MUST BE COMPLETED MUST BE COMPLETED MUST BE COMPLETED
-  write(fd, &packet, sizeof(&packet));
-}
 
 struct move serverTurn(struct gstate state){
   char buffer[512];
