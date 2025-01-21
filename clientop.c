@@ -13,7 +13,7 @@
 
 static void sighandler(int signo){
   if(signo==SIGINT){
-    printf("SIGINT caught\n");
+    printf("SIGINT caught, exiting\n");
     exit(0);
   }
 }

@@ -28,7 +28,7 @@ int main() {
   int from_client;
 
   while(1){
-    int from_client = serverprep();
+    from_client = serverprep();
     to_client = serverconnect(from_client);
-    }
+  }
 }

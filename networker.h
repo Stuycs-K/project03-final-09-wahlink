@@ -13,9 +13,9 @@
 
 #ifndef NETWORKER_H
 #define NETWORKER_H
-#define WKP "kaicenatsigmarizzohioskibidimonster"
+#define WKP "yahoo3824"
 //#define SHMK "choppedchinwheredoIevenStart" not using for 2p
-#define DATA "shawtyslikeamelodyinmyhead"
+#define DATA "datafiler3123"
 
 
 int serverconnect(int from_client);
