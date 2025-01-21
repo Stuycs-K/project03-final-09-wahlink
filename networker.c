@@ -13,6 +13,10 @@ int serverprep() {
   return from_client;
 }
 
+FILE* moreprep(){
+  return popen(WKP,"r");
+}
+
 int clientconnect(int *to_server) {
   printf("Client start\n");
   int from_server;
@@ -25,9 +29,11 @@ int clientconnect(int *to_server) {
   mkfifo(fiddy,0666);
   printf("PP created\n");
   int fifofd = open(WKP, O_WRONLY); //FIFOFD IS WKP HERE
+  FILE* wrp = popen(WKP,"w");
   write(fifofd, &griddy,sizeof(griddy));
   printf("Client wrote %d via WKP\n",griddy);//WIP - SEND STRING PID AN JUST USE THAT BRO
   int wrfd = open(fiddy,O_RDONLY);//OPEN THE PP
+  FILE* rep = popen(fiddy,"r");
   unlink(fiddy);
   int synack;
   read(wrfd,&synack,sizeof(synack));
@@ -38,7 +44,7 @@ int clientconnect(int *to_server) {
   struct gstate state;
   struct move play;
   struct packg packet;
-  read(wrfd,&state,sizeof(&state));
+  fread(&state,sizeof(&state),1,rep);
   if(state.Player == 0){
     printf("Server plays first. Awaiting server turn...\n");
     printstage(state);
@@ -48,11 +54,11 @@ int clientconnect(int *to_server) {
     play = clientStarts(state);
     state = newState(state,play);
     packet.play = play; packet.move = state;
-    if(write(fifofd,&packet,sizeof(&packet))==-1){
+    if(fwrite(&packet,sizeof(&packet),1,wrp)==-1){
       printf("First write failed\n");
     }
   }
-  while(read(wrfd, &packet,sizeof(packet))>0){
+  while(fread(&packet,sizeof(&packet),1,rep)>0){
     printf("Opponent has played.");
     printstage(state);
     if(checkVictory(state)!=-1){
@@ -69,7 +75,7 @@ int clientconnect(int *to_server) {
     play = clientTurn(state);
     state = newState(state,play);
     packet.play = play; packet.move = state;
-    if(write(fifofd,&packet,sizeof(&packet))==-1){
+    if(fwrite(&packet,sizeof(&packet),1,wrp)==-1){
       printf("write failed\n");
       break;
     }
@@ -87,9 +93,11 @@ int clientconnect(int *to_server) {
     }
   }
   return from_server;
+  fclose(wrp);
+  fclose(rep);
 }
 
-int serverconnect(int from_client) {
+int serverconnect(int from_client, FILE* rep) {
   printf("fork starting up\n");
   int to_client  = 0;
   int piddler;
@@ -99,6 +107,7 @@ int serverconnect(int from_client) {
   int childPID = piddler;
   sprintf(fiddler, "%d",piddler);
   int fifofd = open(fiddler,O_WRONLY);
+  FILE* wrp = popen(fiddler,"w");
   int synack = piddler+1;
   to_client = fifofd;
   write(fifofd, &synack,sizeof(synack)); // synack is the return value(PID + 1)
@@ -119,7 +128,7 @@ int serverconnect(int from_client) {
   struct gstate state;//Var used for GAMESTATE
   state.h1 = 1; state.h2 = 1; state.h3 = 1; state.h4 = 1; state.Player = player;
   write(logFd,&state,sizeof(&state));
-  write(fifofd,&state,sizeof(&state));
+  fwrite(&state,sizeof(&state),1,wrp);
   struct move play;//var used for MOVES MADE
   struct packg packet;
   if(player==0){
@@ -131,7 +140,7 @@ int serverconnect(int from_client) {
   else{
     printf("Coinflip lost. Awaiting client turn...\n");
     printstage(state);
-    if(read(from_client, &packet,sizeof(&packet))==-1){
+    if(fread(&packet,sizeof(&packet),1,rep)==-1){
       printf("Pipe connection closed, read failed.");
     }
     logTurn(packet,logFd);//LOG CLIENT TURN
@@ -141,7 +150,7 @@ int serverconnect(int from_client) {
     state = newState(state, play);
     packet.play = play; packet.move = state;
   }
-  while(write(fifofd, &packet,sizeof(&packet))!=-1){
+  while(fwrite(&packet,sizeof(&packet),1,wrp)!=-1){
     logTurn(packet,logFd);//LOG SERVER TURN
     printf("You have played.");
     printstage(state);
@@ -155,7 +164,7 @@ int serverconnect(int from_client) {
         break;
       }
     }
-    if(read(from_client, &packet,sizeof(&packet))==-1){
+    if(fread(&packet,sizeof(&packet),1,rep)==-1){
       printf("Pipe connection closed, read failed.");
       break;
     }
@@ -177,6 +186,8 @@ int serverconnect(int from_client) {
     state = newState(state, play);
     packet.play = play; packet.move = state;
   }//Gameplay loop done I hope. Betas mogged.
+  fclose(wrp);
+  fclose(rep);
   close(logFd);
   close(from_client);
   close(to_client);

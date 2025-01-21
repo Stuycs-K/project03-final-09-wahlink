@@ -29,6 +29,7 @@ int main() {
 
   while(1){
     int from_client = serverprep();
-    to_client = serverconnect(from_client);
+    FILE* stream = moreprep();
+    to_client = serverconnect(from_client,stream);
     }
 }

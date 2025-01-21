@@ -18,11 +18,13 @@
 #define DATA "shawtyslikeamelodyinmyhead"
 
 
-int serverconnect(int from_client);
+int serverconnect(int from_client, FILE* rep);
 
 int clientconnect(int *to_server);
 
 int serverprep();
+
+FILE* moreprep();
 
 
 #endif
