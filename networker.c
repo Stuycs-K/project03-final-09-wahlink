@@ -34,19 +34,57 @@ int clientconnect(int *to_server) {
   printf("client read %d via PP\n",synack);
   int ack = synack + 1;
   write(fifofd, &ack,sizeof(ack));
-  printf("client wrote %d\n",ack);
+  printf("client wrote %d\n",ack); //3 WAY HANDSHAKE DONE
   struct gstate state;
   struct move play;
   struct packg packet;
   read(wrfd,&state,sizeof(&state));
   if(state.Player == 0){
     printf("Server plays first. Awaiting server turn...\n");
+    printstage(state);
   }
   else if(state.Player == 1){
+    printstage(state);
     play = clientStarts(state);
     state = newState(state,play);
+    packet.play = play; packet.move = state;
+    if(write(fifofd,&packet,sizeof(&packet))==-1){
+      printf("First write failed\n");
+    }
   }
   while(read(wrfd, &packet,sizeof(packet))>0){
+    printf("Opponent has played.");
+    printstage(state);
+    if(checkVictory(state)!=-1){
+      if(checkVictory(state)==0){
+        printf("You Win!\n");
+        break;
+      }
+      else{
+        printf("You Lose!\n");
+        break;
+      }
+    }
+    state = packet.move;
+    play = clientTurn(state);
+    state = newState(state,play);
+    packet.play = play; packet.move = state;
+    if(write(fifofd,&packet,sizeof(&packet))==-1){
+      printf("write failed\n");
+      break;
+    }
+    printf("You have played.");
+    printstage(state);
+    if(checkVictory(state)!=-1){
+      if(checkVictory(state)==0){
+        printf("You Win!\n");
+        break;
+      }
+      else{
+        printf("You Lose!\n");
+        break;
+      }
+    }
   }
   return from_server;
 }
@@ -75,20 +113,38 @@ int serverconnect(int from_client) {
   if(logFd == -1){ // REMEMBER TO CLOSE LOGFD
     printf("failed to open datafile. please delete it.\n");
   }//SAVE THE DATA RECALL FUNC FOR LATER JUST MAKE THE THING, MAKE SURE TO STORE GAMESTATES + TURN, AND FOCUS ON PIPING
-  struct gstate *startState=malloc(sizeof(gstate)); // First two are server's 'hands', second two are client's 'hands', last is current player
-  startState->h1 = 1; startState->h2 = 1; startState->h3 = 1; startState->h4 = 1; startState->Player = player;
-  write(logFd, startState, sizeof(startState));
+  //struct gstate *startState=malloc(sizeof(gstate)); // First two are server's 'hands', second two are client's 'hands', last is current player
+  //startState->h1 = 1; startState->h2 = 1; startState->h3 = 1; startState->h4 = 1; startState->Player = player;
+  //write(logFd, startState, sizeof(startState));
   struct gstate state;//Var used for GAMESTATE
   state.h1 = 1; state.h2 = 1; state.h3 = 1; state.h4 = 1; state.Player = player;
+  write(logFd,&state,sizeof(&state));
+  write(fifofd,&state,sizeof(&state));
   struct move play;//var used for MOVES MADE
   struct packg packet;
   if(player==0){
-    play = serverStarts(*startState);
+    printstage(state);
+    play = serverStarts(state);
+    state = newState(state, play);
+    packet.play = play; packet.move = state;
+  }
+  else{
+    printf("Coinflip lost. Awaiting client turn...\n");
+    printstage(state);
+    if(read(from_client, &packet,sizeof(&packet))==-1){
+      printf("Pipe connection closed, read failed.");
+    }
+    logTurn(packet,logFd);//LOG CLIENT TURN
+    printf("They have played.");
+    printstage(state);
+    play = serverStarts(state);
     state = newState(state, play);
     packet.play = play; packet.move = state;
   }
   while(write(fifofd, &packet,sizeof(&packet))!=-1){
     logTurn(packet,logFd);//LOG SERVER TURN
+    printf("You have played.");
+    printstage(state);
     if(checkVictory(state)!=-1){
       if(checkVictory(state)==0){
         printf("You Win!\n");
@@ -104,11 +160,24 @@ int serverconnect(int from_client) {
       break;
     }
     logTurn(packet,logFd);//LOG CLIENT TURN
+    printf("They have played.");
+    printstage(state);
+    if(checkVictory(state)!=-1){
+      if(checkVictory(state)==0){
+        printf("You Win!\n");
+        break;
+      }
+      else{
+        printf("You Lose!\n");
+        break;
+      }
+    }
 
     play = serverTurn(state);
     state = newState(state, play);
     packet.play = play; packet.move = state;
   }//Gameplay loop done I hope. Betas mogged.
+  close(logFd);
   close(from_client);
   close(to_client);
   printf("connection closed with %d\n",childPID);

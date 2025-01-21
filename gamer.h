@@ -42,6 +42,8 @@ struct gstate newState(struct gstate state, struct move play);
 int checkDeath(int inpt);
 void sendcmd(struct move play, int pipe);
 void logTurn(struct packg packet, int fd);
+void printmove(struct move play);
+void printstage(struct gstate state);
 int checkVictory(struct gstate state);
 
 #endif

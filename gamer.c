@@ -14,6 +14,20 @@ struct move clientStarts(struct gstate state){
   return clientTurn(state);
 }
 
+void printmove(struct move play){
+  if(strcmp(play.type,"atk")){
+    printf("Attacked %d with %d\n",play.target,play.hand);
+  }
+  if(strcmp(play.type,"swp")){
+    printf("used swap from %d for %d value\n",play.hand,play.howmuch);
+  }
+}
+void printstage(struct gstate state){
+  printf("Server: Hand 1:%d Hand 2:%d\nClient: Hand 1:%d Hand 2:%d\n",state.h1,state.h2,state.h3,state.h4);
+}
+
+
+
 void sendcmd(struct move play, int pipe){
   write(pipe, &play, sizeof(&play));
 }
@@ -29,7 +43,7 @@ int checkVictory(struct gstate state){//Returns: 0 on serverWin, 1 on clientWin,
 }
 
 int checkDeath(int inpt){
-  if(inpt<=5){
+  if(inpt>=5){
     return 0;
   }
   return inpt;
@@ -128,6 +142,7 @@ struct move serverTurn(struct gstate state){
     if (strcmp("1\n",buffer)==0){
       if(state.h1==0){
         printf("Choose an active hand!\n");
+        serverTurn(state);
       }
       else{
         printf("Which hand would you like to attack?\n");
@@ -135,6 +150,7 @@ struct move serverTurn(struct gstate state){
         if (strcmp("1\n",buffer)==0){ // Start of choosing target
           if(state.h3==0){
             printf("Choose an active hand!\n");
+            serverTurn(state);
           }
           else{
             temp.type = "atk";
@@ -146,6 +162,7 @@ struct move serverTurn(struct gstate state){
         else if (strcmp("2\n",buffer)==0){
           if(state.h4==0){
             printf("Choose an active hand!\n");
+            serverTurn(state);
           }
           else{
             temp.type = "atk";
@@ -159,6 +176,7 @@ struct move serverTurn(struct gstate state){
     else if (strcmp("2\n",buffer)==0){
       if(state.h2==0){
         printf("Choose an active hand!\n");
+        serverTurn(state);
       }
       else{
         printf("Which hand would you like to attack?\n");
@@ -166,6 +184,7 @@ struct move serverTurn(struct gstate state){
         if (strcmp("1\n",buffer)==0){ // Start of choosing target
           if(state.h3==0){
             printf("Choose an active hand!\n");
+            serverTurn(state);
           }
           else{
             temp.type = "atk";
@@ -177,6 +196,7 @@ struct move serverTurn(struct gstate state){
         else if (strcmp("2\n",buffer)==0){
           if(state.h4==0){
             printf("Choose an active hand!\n");
+            serverTurn(state);
           }
           else{
             temp.type = "atk";
@@ -198,6 +218,8 @@ struct move serverTurn(struct gstate state){
     if (strcmp("1\n",buffer)==0){
       if(state.h1==0){
         printf("Choose an active hand!\n");
+        serverTurn(state);
+
       }
       else{
         printf("How many would you like to transfer?(1-%d)",state.h1);
@@ -206,6 +228,7 @@ struct move serverTurn(struct gstate state){
         sscanf(buffer,"%d",&nuMoved);
         if(nuMoved<1||nuMoved>state.h1){
           printf("enter a valid #(1-%d)",state.h1);
+          serverTurn(state);
         }
         else{
           temp.type = "swp";
@@ -217,6 +240,7 @@ struct move serverTurn(struct gstate state){
     else if(strcmp("2\n",buffer)==0){
       if(state.h2==0){
         printf("Choose an active hand!\n");
+        serverTurn(state);
       }
       else{
         printf("How many would you like to transfer?(1-%d)",state.h2);
@@ -225,6 +249,7 @@ struct move serverTurn(struct gstate state){
         sscanf(buffer,"%d",&nuMoved);
         if(nuMoved<1||nuMoved>state.h2){
           printf("enter a valid #(1-%d)",state.h2);
+          serverTurn(state);
         }
         else{
           temp.type = "swp";
@@ -256,6 +281,7 @@ struct move clientTurn(struct gstate state){
     if (strcmp("1\n",buffer)==0){
       if(state.h4==0){
         printf("Choose an active hand!\n");
+        clientTurn(state);
       }
       else{
         printf("Which hand would you like to attack?\n");
@@ -263,6 +289,7 @@ struct move clientTurn(struct gstate state){
         if (strcmp("1\n",buffer)==0){ // Start of choosing target
           if(state.h1==0){
             printf("Choose an active hand!\n");
+            clientTurn(state);
           }
           else{
             temp.type = "atk";
@@ -274,6 +301,7 @@ struct move clientTurn(struct gstate state){
         else if (strcmp("2\n",buffer)==0){
           if(state.h2==0){
             printf("Choose an active hand!\n");
+            clientTurn(state);
           }
           else{
             temp.type = "atk";
@@ -287,6 +315,7 @@ struct move clientTurn(struct gstate state){
     else if (strcmp("2\n",buffer)==0){
       if(state.h4==0){
         printf("Choose an active hand!\n");
+        clientTurn(state);
       }
       else{
         printf("Which hand would you like to attack?\n");
@@ -294,6 +323,7 @@ struct move clientTurn(struct gstate state){
         if (strcmp("1\n",buffer)==0){ // Start of choosing target
           if(state.h1==0){
             printf("Choose an active hand!\n");
+            clientTurn(state);
           }
           else{
             temp.type = "atk";
@@ -305,6 +335,7 @@ struct move clientTurn(struct gstate state){
         else if (strcmp("2\n",buffer)==0){
           if(state.h2==0){
             printf("Choose an active hand!\n");
+            clientTurn(state);
           }
           else{
             temp.type = "atk";
@@ -326,6 +357,7 @@ struct move clientTurn(struct gstate state){
     if (strcmp("1\n",buffer)==0){
       if(state.h3==0){
         printf("Choose an active hand!\n");
+        clientTurn(state);
       }
       else{
         printf("How many would you like to transfer?(1-%d)",state.h3);
@@ -334,6 +366,7 @@ struct move clientTurn(struct gstate state){
         sscanf(buffer,"%d",&nuMoved);
         if(nuMoved<1||nuMoved>state.h3){
           printf("enter a valid #(1-%d)",state.h3);
+          clientTurn(state);
         }
         else{
           temp.type = "swp";
@@ -345,6 +378,7 @@ struct move clientTurn(struct gstate state){
     else if(strcmp("2\n",buffer)==0){
       if(state.h4==0){
         printf("Choose an active hand!\n");
+        clientTurn(state);
       }
       else{
         printf("How many would you like to transfer?(1-%d)",state.h4);
@@ -353,6 +387,7 @@ struct move clientTurn(struct gstate state){
         sscanf(buffer,"%d",&nuMoved);
         if(nuMoved<1||nuMoved>state.h4){
           printf("enter a valid #(1-%d)",state.h4);
+          clientTurn(state);
         }
         else{
           temp.type = "swp";
