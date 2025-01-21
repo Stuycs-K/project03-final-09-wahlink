@@ -42,9 +42,9 @@ int clientconnect(int *to_server) {
   if(state.Player == 0){
     printf("Server plays first. Awaiting server turn...\n");
   }
-  else if(state.player == 1){
+  else if(state.Player == 1){
     play = clientStarts(state);
-    state = newState(play);
+    state = newState(state,play);
   }
   while(read(wrfd, &packet,sizeof(packet))>0){
   }
@@ -84,7 +84,7 @@ int serverconnect(int from_client) {
   struct packg packet;
   if(player==0){
     play = serverStarts(*startState);
-    state = newStateServ(state, play);
+    state = newState(state, play);
     packet.play = play; packet.move = state;
   }
   while(write(fifofd, &packet,sizeof(&packet))!=-1){
@@ -106,7 +106,7 @@ int serverconnect(int from_client) {
     logTurn(packet,logFd);//LOG CLIENT TURN
 
     play = serverTurn(state);
-    state = newStateServ(state, play);
+    state = newState(state, play);
     packet.play = play; packet.move = state;
   }//Gameplay loop done I hope. Betas mogged.
   close(from_client);

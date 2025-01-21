@@ -28,43 +28,87 @@ int checkVictory(struct gstate state){//Returns: 0 on serverWin, 1 on clientWin,
   return -1;
 }
 
-struct gstate newStateServ(struct gstate state, struct move play){ // Takes a move struct and uses it to create a new state struct for replay.
+int checkDeath(int inpt){
+  if(inpt<=5){
+    return 0;
+  }
+  return inpt;
+}
+
+struct gstate newState(struct gstate state, struct move play){ // Takes a move struct and uses it to create a new state struct for replay.
   struct gstate temp;
   temp.h1 = state.h1;
   temp.h2 = state.h2;
   temp.h3 = state.h3;
   temp.h4 = state.h4;
-  temp.player = (state.player-1)*-1
-  if(state.player==0){
-    if (play.type == "atk"){
+  temp.Player = (state.Player-1)*-1;
+  if(state.Player==0){
+    if (strcmp(play.type,"atk")==0){
       if(play.hand == 1){
         if (play.target==1){
           temp.h3 += temp.h1;
+          temp.h3 = checkDeath(temp.h3);
         }
         else if(play.target ==2){
           temp.h4+=temp.h1;
+          temp.h4 = checkDeath(temp.h4);
         }
       }
       else if (play.hand ==2){
         if (play.target==1){
           temp.h3 += temp.h2;
+          temp.h3 = checkDeath(temp.h3);
         }
         else if(play.target ==2){
           temp.h4+=temp.h2;
+          temp.h4 = checkDeath(temp.h4);
         }
       }//hand2
     }//attacks
-    else if(play.type == "swp"){
+    else if(strcmp(play.type,"swp")==0){
       if(play.hand == 1){
         temp.h2 += play.howmuch;
+        temp.h2 = checkDeath(temp.h2);
       }//hand1
       else if (play.hand ==2){
         temp.h1 += play.howmuch;
+        temp.h1 = checkDeath(temp.h2);
       }//hand2
     }//swapping
   }//SERVER TURN PROCESSER
-  else if(state.player==1){
-
+  else if(state.Player==1){
+    if (strcmp(play.type,"atk")==0){
+      if(play.hand == 1){
+        if (play.target==1){
+          temp.h1 += temp.h3;
+          temp.h1 = checkDeath(temp.h1);
+        }
+        else if(play.target ==2){
+          temp.h2+=temp.h3;
+          temp.h2 = checkDeath(temp.h2);
+        }
+      }
+      else if (play.hand ==2){
+        if (play.target==1){
+          temp.h1 += temp.h4;
+          temp.h1 = checkDeath(temp.h1);
+        }
+        else if(play.target ==2){
+          temp.h2+=temp.h4;
+          temp.h2 = checkDeath(temp.h2);
+        }
+      }//hand2
+    }//attacks
+    else if(strcmp(play.type,"swp")==0){
+      if(play.hand == 1){
+        temp.h4 += play.howmuch;
+        temp.h4 = checkDeath(temp.h4);
+      }//hand1
+      else if (play.hand ==2){
+        temp.h3 += play.howmuch;
+        temp.h3 = checkDeath(temp.h3);
+      }//hand2
+    }//swapping
   }
   return temp;
 }
@@ -196,8 +240,9 @@ struct move serverTurn(struct gstate state){
   }
   else{
     printf("invalid input. Please enter 'attack' or 'split'");
-    serverTurn(state, pipe);
+    serverTurn(state);
   }
+  return(temp);
 } // Client's program should be the same, but swap the h1 and h3 and h2 and h4
 
 struct move clientTurn(struct gstate state){
@@ -325,4 +370,5 @@ struct move clientTurn(struct gstate state){
     printf("invalid input. Please enter 'attack' or 'split'");
     clientTurn(state);
   }
+  return(temp);
 } // ClientTurn
