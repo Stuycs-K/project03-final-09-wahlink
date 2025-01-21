@@ -35,3 +35,6 @@ Worked on carrying out last devlog for server, will need to adjust the move proc
 
 ### 2024-17-03 - Continued server's script
 Added win condtions for the server side, there is no rematch system yet but I have brainstormed how to carry that out.
+
+### 2024 - 20 - 03 - Finished RPS version
+Due to unforseen complications in moving structs via pipes, I decided to make my next commit rock paper scissors instead of chopsticks. This new program still utilizes all of the same meaningful features, but it is using the pipes in a different way and doesn't go through all the calculations that chopsticks does. If I am able to get an extension I can attempt to complete the chopsticks version.
