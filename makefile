@@ -1,12 +1,12 @@
 all: client server replay
 client: clientop.o networker.o gamer.o
-	@gcc -o client clientop.o networker.o 
+	@gcc -o client clientop.o networker.o gamer.o
 
 server: serverop.o networker.o gamer.o
-	@gcc -o server serverop.o networker.o
+	@gcc -o server serverop.o networker.o gamer.o
 
 replay: replay.o networker.o gamer.o
-	@gcc -o replay replay.o networker.o
+	@gcc -o replay replay.o networker.o gamer.o
 
 clientop.o: clientop.c networker.h gamer.h
 	@gcc -c clientop.c
