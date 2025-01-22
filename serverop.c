@@ -8,7 +8,6 @@
 #include <sys/shm.h>
 #include <sys/types.h>
 #include "networker.h"
-#include "gamer.h"
 
 //This one will manage the server, facilitating it to keep accepting clients
 //catches signals

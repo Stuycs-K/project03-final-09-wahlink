@@ -8,7 +8,6 @@
 #include <sys/shm.h>
 #include <sys/types.h>
 #include "networker.h"
-#include "gamer.h"
 //This one will handle the client, probably only catching signals
 
 static void sighandler(int signo){
