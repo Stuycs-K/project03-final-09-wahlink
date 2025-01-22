@@ -9,7 +9,6 @@
 #include <sys/types.h>
 #include <termios.h>
 #include "networker.h"
-#include "gamer.h"
 
 #define DATA "datafiler3123"
 
