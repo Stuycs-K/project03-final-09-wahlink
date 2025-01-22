@@ -90,13 +90,13 @@ int main(){
     clean_stdin();
     if(strcmp(buffer,"play")==0){
       printf("Turn %d:\n",turn);
-      lseek(fd,+2*sizeof(int),SEEK_SET);
+      lseek(fd,0,SEEK_SET);
       while(playturn(fd)!=-1){
         turn++;
         printf("Turn %d:\n",turn);
-        lseek(fd,+2*sizeof(int),SEEK_CUR);
+        
       }
-      lseek(fd,+2*sizeof(int),SEEK_SET);
+      lseek(fd,0,SEEK_SET);
       turn =1;
       clean_stdin();
       strcpy(buffer,"");
@@ -106,7 +106,7 @@ int main(){
       if(turn>1){
         turn--;
         printf("Turn %d:\n",turn);
-        lseek(fd,-4*sizeof(int),SEEK_CUR);
+        lseek(fd,-2*sizeof(int),SEEK_CUR);
         playturn(fd);
         lseek(fd,-2*sizeof(int),SEEK_CUR);
       }
@@ -117,7 +117,7 @@ int main(){
     else if(strcmp(buffer,"r\n")==0){
       turn++;
       printf("Turn %d:\n",turn);
-      lseek(fd,+4*sizeof(int),SEEK_CUR);
+      lseek(fd,+2*sizeof(int),SEEK_CUR);
       if(playturn(fd)==-1){
         turn=0;
       }
