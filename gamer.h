@@ -14,35 +14,8 @@
 #define GAMER_H
 int coinflip();
 
-struct gstate{
-  int Player;
-  int h1;
-  int h2;
-  int h3;
-  int h4;
-} gstate;
 
-struct move{
-  char* type;
-  int hand;
-  int target;
-  int howmuch;
-} move;
-
-struct packg{
-  struct move play;
-  struct gstate move;
-} packg;
-
-struct move serverStarts(struct gstate state);
-struct move clientStarts(struct gstate state);
-struct move serverTurn(struct gstate state);
-struct move clientTurn(struct gstate state);
-struct gstate newState(struct gstate state, struct move play);
 int checkDeath(int inpt);
-void sendcmd(struct move play, int pipe);
-void logTurn(struct packg packet, int fd);
-void printmove(struct move play);
 void printstage(int mine, int theirs);
 int checkVictory(int mine, int theirs);
 
