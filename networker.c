@@ -119,8 +119,8 @@ int serverconnect(int from_client) {
       printf("connection closed\n");
       break;
     }
-    write(logFd,&mine,sizeof(&mine));
-    write(logFd,&theirs,sizeof(&theirs));
+    write(logFd,&mine,sizeof(mine));
+    write(logFd,&theirs,sizeof(theirs));
     printf("Round complete. ");
     printstage(mine,theirs);
     if(checkVictory(mine,theirs)!=-1){
