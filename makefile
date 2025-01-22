@@ -18,10 +18,10 @@ replay.o: replay.c networker.h gamer.h
 	@gcc -c replay.c
 
 networker.o: networker.c networker.h
-	@gcc -c networker.c networker.h
+	@gcc -c networker.c 
 
 gamer.o: gamer.c gamer.h
-	@gcc -c gamer.c gamer.h
+	@gcc -c gamer.c
 
 clean:
 	rm -rf *.o server client
