@@ -10,6 +10,8 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/types.h>// might need gamer.h do that if it dont work
+#include "gamer.h"
+
 
 #ifndef NETWORKER_H
 #define NETWORKER_H
