@@ -14,7 +14,6 @@
 #ifndef NETWORKER_H
 #define NETWORKER_H
 #define WKP "yahoo3824"
-//#define SHMK "choppedchinwheredoIevenStart" not using for 2p
 #define DATA "datafiler3123"
 
 
